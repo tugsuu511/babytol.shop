@@ -86,15 +86,16 @@ export function SiteHeader() {
       </a>
 
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
-        {/* Лого — 4U Pharma-ийн эх PNG, харьцааг хадгалсан */}
+        {/* Лого — Babytol "for you!" ® эх файл, өөрчлөөгүй, харьцааг хадгалсан */}
         <Link href="/" onClick={closeAll} className="shrink-0 py-2" aria-label="Babytol — нүүр хуудас">
           <Image
-            src="/brand/4u-pharma-logo.png"
-            alt="4U pharma"
-            width={207}
-            height={80}
+            src="/brand/babytol-logo.jpg"
+            alt="Babytol for you!"
+            width={2576}
+            height={888}
             priority
-            className="h-9 w-auto lg:h-10"
+            sizes="(min-width: 1024px) 140px, 116px"
+            className="h-10 w-auto lg:h-12"
           />
         </Link>
 
