@@ -3,14 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
+import { CartButton } from "@/components/cart-drawer";
 import { products } from "@/lib/products";
-
-const navLinks = [
-  { href: "/about", label: "Бидний тухай" },
-  { href: "/how-to-use", label: "Хэрэглэх заавар" },
-  { href: "/faq", label: "Түгээмэл асуулт" },
-  { href: "/contact", label: "Холбоо барих" },
-];
 
 // Дөрвөн SKU-ийн гол өнгөөр header-ийн доод зураас
 const stripe = ["#F79E24", "#ED1072", "#00A785", "#CC242E"];
@@ -86,15 +80,16 @@ export function SiteHeader() {
       </a>
 
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
-        {/* Лого — 4U Pharma-ийн эх PNG, харьцааг хадгалсан */}
+        {/* Лого — Babytol® for you! албан lockup (эх JPG, цагаан фон), харьцаа/өнгийг хадгалсан */}
         <Link href="/" onClick={closeAll} className="shrink-0 py-2" aria-label="Babytol — нүүр хуудас">
           <Image
-            src="/brand/4u-pharma-logo.png"
-            alt="4U pharma"
-            width={207}
-            height={80}
+            src="/brand/babytol-logo.jpg"
+            alt="Babytol for you!"
+            width={4133}
+            height={1425}
             priority
-            className="h-9 w-auto lg:h-10"
+            sizes="(min-width: 1024px) 140px, 116px"
+            className="h-10 w-auto lg:h-12"
           />
         </Link>
 
@@ -114,7 +109,7 @@ export function SiteHeader() {
                 onClick={() => setProductsOpen((v) => !v)}
                 className="flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold text-ink transition-colors hover:bg-ivory-200 aria-expanded:bg-ivory-200"
               >
-                Бүтээгдэхүүн
+                Бүтээгдэхүүний дэлгэрэнгүй
                 <Chevron open={productsOpen} />
               </button>
 
@@ -145,38 +140,15 @@ export function SiteHeader() {
                             <span className="text-[15px] font-semibold leading-tight text-ink">
                               {p.name}
                             </span>
-                            <span className="flex gap-1" aria-hidden>
-                              {p.palette.map((c) => (
-                                <span key={c} className="h-1.5 w-5 rounded-full" style={{ background: c }} />
-                              ))}
-                            </span>
                           </span>
                         </Link>
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href="/products"
-                    onClick={closeAll}
-                    className="mt-2 flex items-center justify-between rounded-xl bg-ivory-200 px-4 py-3 text-sm font-semibold text-ink hover:bg-ivory-300"
-                  >
-                    Бүх бүтээгдэхүүнийг харьцуулах
-                    <span aria-hidden>→</span>
-                  </Link>
                 </div>
               </div>
             </li>
 
-            {navLinks.map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="rounded-full px-4 py-2 text-[15px] font-semibold text-ink transition-colors hover:bg-ivory-200"
-                >
-                  {l.label}
-                </Link>
-              </li>
-            ))}
           </ul>
         </nav>
 
@@ -188,6 +160,8 @@ export function SiteHeader() {
           >
             Хаанаас авах
           </Link>
+
+          <CartButton />
 
           <button
             type="button"
@@ -217,7 +191,7 @@ export function SiteHeader() {
       >
         <nav aria-label="Үндсэн цэс" className="px-4 pb-10 pt-5 sm:px-6">
           <p className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted">
-            Бүтээгдэхүүн
+            Бүтээгдэхүүний дэлгэрэнгүй
           </p>
           <ul className="mt-3 grid grid-cols-2 gap-2">
             {products.map((p) => (
@@ -232,21 +206,6 @@ export function SiteHeader() {
                     <Image src={p.packshot} alt="" fill sizes="45vw" className="object-contain" />
                   </span>
                   <span className="text-sm font-semibold leading-tight text-ink">{p.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <ul className="mt-6 divide-y divide-line border-y border-line">
-            {navLinks.map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  onClick={closeAll}
-                  className="flex items-center justify-between px-1 py-4 text-base font-semibold text-ink"
-                >
-                  {l.label}
-                  <span aria-hidden className="text-ink-muted">→</span>
                 </Link>
               </li>
             ))}

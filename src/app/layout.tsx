@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import { CartDrawer } from "@/components/cart-drawer";
+import { CartToast } from "@/components/cart-toast";
+import { CheckoutDialog } from "@/components/checkout-dialog";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Babytol — 4U Pharma",
-  description: "Babytol D3, D3 + K1, D3 + DHA Omega, DHA Omega — хүүхдэд зориулсан twist-off капсул.",
+  description: "Babytol D3, D3 + K1, D3 + DHA Omega, DHA Omega — хүүхдэд зориулсан мушгидаг капсул.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -15,6 +18,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main id="main" className="flex flex-1 flex-col">
           {children}
         </main>
+        <CartDrawer />
+        <CheckoutDialog />
+        <CartToast />
       </body>
     </html>
   );
