@@ -30,8 +30,30 @@ function subscribe(cb: () => void) {
   };
 }
 
+/** Гүйлгэлт дуусч, (утасны хаягийн мөрийн) viewport-ийн хэмжээ тогтворжихыг хүлээнэ */
+function waitForScrollSettle(): Promise<void> {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      window.removeEventListener("scrollend", finish);
+      // Хаягийн мөрийн resize нэг-хоёр frame хоцорч ирдэг
+      setTimeout(() => requestAnimationFrame(() => resolve()), 120);
+    };
+    if ("onscrollend" in window) window.addEventListener("scrollend", finish, { once: true });
+    setTimeout(finish, 700); // scrollend дэмжихгүй / ирэхгүй үед
+  });
+}
+
 /** view-transition-name + class — хэсэг бүр бие даан хөдөлнө */
-const vt = (name: string, cls: "org-card" | "org-piece" | "org-mark"): CSSProperties => ({
+/** fly — CSS нөөц хөдөлгөөнд хэсэг хаанаас нисэж ирэх: [x, y, эргэлт, хоцролт ms] */
+const vt = (
+  name: string,
+  cls: "org-card" | "org-piece" | "org-mark",
+  fly?: [string, string, string, number],
+): CSSProperties => ({
+  ...(fly && ({ "--fx": fly[0], "--fy": fly[1], "--fr": fly[2], "--fd": `${fly[3]}ms` } as CSSProperties)),
   viewTransitionName: name,
   viewTransitionClass: cls,
 });
@@ -54,26 +76,49 @@ export function OrgExplorer({ maker, supplier }: { maker: ReactNode; supplier: R
   const rootRef = useRef<HTMLElement>(null);
 
   const go = useCallback((next: Org | null) => {
-    const apply = () => {
+    const root = rootRef.current;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    delete root?.dataset.fx;
+
+    const apply = () =>
       flushSync(() => {
         const url = next ? `#${next}` : window.location.pathname + window.location.search;
         window.history.pushState(null, "", url);
         window.dispatchEvent(new Event(EVENT));
       });
-      // Картын дээд хэсэг рүү буцаана (доош гүйлгэсэн үед)
-      const el = rootRef.current;
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - 96;
-        if (window.scrollY > top) window.scrollTo({ top, behavior: "instant" });
-      }
+
+    /** CSS нөөц хөдөлгөөн: banner-ийн хэсгүүд өөр өөр чиглэлээс нисэж ирж нийлнэ */
+    const playCssFallback = () => {
+      if (!root || reduce) return;
+      delete root.dataset.fx;
+      void root.offsetWidth; // хөдөлгөөнийг дахин эхлүүлэх
+      root.dataset.fx = "css";
     };
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || typeof document.startViewTransition !== "function") apply();
-    else document.startViewTransition(apply);
+
+    const start = () => {
+      if (reduce) return apply();
+      if (typeof document.startViewTransition !== "function") {
+        apply();
+        return playCssFallback();
+      }
+      const t = document.startViewTransition(apply);
+      // Шилжилтийн үед viewport өөрчлөгдвөл браузер хөдөлгөөнийг цуцалж reject хийнэ.
+      // DOM аль хэдийн шинэчлэгдсэн тул CSS нөөц хөдөлгөөнийг тоглуулна.
+      t.ready.catch(playCssFallback);
+      t.finished.catch(() => {});
+      t.updateCallbackDone.catch(() => {});
+    };
+
+    // Утсан дээр: дээш гүйлгэхэд хаягийн мөр гарч viewport өөрчлөгддөг тул шилжилтийн
+    // ӨМНӨ гүйлгэж дуусгаад, хэмжээ тогтворжсоны дараа хөдөлгөөнийг эхлүүлнэ.
+    const top = root ? root.getBoundingClientRect().top + window.scrollY - 96 : 0;
+    if (window.scrollY <= top + 4) return start();
+    window.scrollTo({ top: Math.max(0, top), behavior: reduce ? "instant" : "smooth" });
+    waitForScrollSettle().then(start);
   }, []);
 
   return (
-    <section ref={rootRef} aria-labelledby="about-title" className="bg-ivory">
+    <section ref={rootRef} aria-labelledby="about-title" className="overflow-x-clip bg-ivory">
       {open === null ? (
         <Chooser onOpen={go} />
       ) : (
@@ -291,23 +336,26 @@ function MakerBanner() {
   return (
     <div
       style={vt("org-card-maker", "org-card")}
-      className="relative isolate overflow-hidden rounded-[2rem] bg-brand-red p-7 text-white sm:p-10 lg:px-14 lg:py-12"
+      className="org-banner relative isolate overflow-hidden rounded-[2rem] bg-brand-red p-7 text-white sm:p-10 lg:px-14 lg:py-12"
     >
       <SwissCross
-        style={vt("org-mark-maker", "org-mark")}
+        style={vt("org-mark-maker", "org-mark", ["60px", "-40px", "25deg", 0])}
         className="pointer-events-none absolute -right-[10%] top-1/2 -z-10 w-[58%] -translate-y-1/2 text-white/[0.16] sm:-right-[4%] sm:w-[40%] lg:w-[30%] lg:text-white"
       />
       <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
-        <SwissSeal style={vt("org-seal-maker", "org-piece")} className="h-14 w-14 shrink-0 sm:h-24 sm:w-24" />
+        <SwissSeal
+          style={vt("org-seal-maker", "org-piece", ["-50px", "-30px", "-30deg", 60])}
+          className="h-14 w-14 shrink-0 sm:h-24 sm:w-24"
+        />
         <div className="min-w-0 lg:max-w-[64%]">
           <h2
-            style={vt("org-role-maker", "org-piece")}
+            style={vt("org-role-maker", "org-piece", ["-40px", "30px", "-4deg", 100])}
             className="w-fit text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-6xl xl:text-7xl"
           >
             {c.role}
           </h2>
           <p
-            style={vt("org-name-maker", "org-piece")}
+            style={vt("org-name-maker", "org-piece", ["30px", "40px", "3deg", 160])}
             className="mt-3 w-fit text-xl font-semibold text-white/90 sm:text-2xl"
           >
             {c.name}
@@ -315,7 +363,7 @@ function MakerBanner() {
         </div>
       </div>
       <p
-        style={vt("org-tag-maker", "org-piece")}
+        style={vt("org-tag-maker", "org-piece", ["0px", "50px", "-2deg", 220])}
         className="mt-6 max-w-[40ch] text-[17px] leading-[1.5] [text-wrap:pretty] sm:text-lg lg:max-w-[56%]"
       >
         {c.tagline}
@@ -329,10 +377,13 @@ function SupplierBanner() {
   return (
     <div
       style={vt("org-card-supplier", "org-card")}
-      className="relative isolate overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink sm:p-10 lg:px-14 lg:py-12"
+      className="org-banner relative isolate overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink sm:p-10 lg:px-14 lg:py-12"
     >
       <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
-        <span style={vt("org-mark-supplier", "org-mark")} className="block w-24 shrink-0 sm:w-40">
+        <span
+          style={vt("org-mark-supplier", "org-mark", ["-60px", "-30px", "-12deg", 0])}
+          className="block w-24 shrink-0 sm:w-40"
+        >
           <Image
             src="/brand/achit/achit-pharma-logo.png"
             alt="Ачит Фарм"
@@ -343,13 +394,13 @@ function SupplierBanner() {
         </span>
         <div className="min-w-0 lg:max-w-[60%]">
           <h2
-            style={vt("org-role-supplier", "org-piece")}
+            style={vt("org-role-supplier", "org-piece", ["50px", "-20px", "4deg", 100])}
             className="w-fit text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-6xl xl:text-7xl"
           >
             {c.role}
           </h2>
           <p
-            style={vt("org-name-supplier", "org-piece")}
+            style={vt("org-name-supplier", "org-piece", ["-30px", "40px", "-3deg", 160])}
             className="mt-3 w-fit text-xl font-semibold text-ink-muted sm:text-2xl"
           >
             {c.name}
@@ -357,7 +408,7 @@ function SupplierBanner() {
         </div>
       </div>
       <p
-        style={vt("org-tag-supplier", "org-piece")}
+        style={vt("org-tag-supplier", "org-piece", ["20px", "50px", "2deg", 220])}
         className="mt-6 max-w-[40ch] text-[17px] leading-[1.5] [text-wrap:pretty] sm:text-lg lg:max-w-[52%]"
       >
         {c.tagline}

@@ -171,6 +171,21 @@ body {
   from { opacity: 0; transform: translateY(18px) scale(0.94); }
 }
 
+/* CSS нөөц хөдөлгөөн — View Transitions байхгүй эсвэл цуцлагдсан үед (хуучин утас, in-app browser).
+   Banner томорч, хэсгүүд (--fx/--fy/--fr) өөр өөр чиглэлээс нисэж ирээд нийлнэ. */
+[data-fx="css"] .org-banner {
+  animation: org-banner-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+[data-fx="css"] .org-banner [style*="--fx"] {
+  animation: org-fly-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--fd, 0ms) both;
+}
+@keyframes org-banner-in {
+  from { opacity: 0.3; transform: scale(0.9); }
+}
+@keyframes org-fly-in {
+  from { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0.9); }
+}
+
 /* Агуулга цаас шиг дээрээс доош дэлгэгдэнэ */
 .org-unfold > * {
   transform-origin: 50% 0;
@@ -186,7 +201,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .org-unfold > * { animation: none; }
+  .org-unfold > *,
+  [data-fx="css"] .org-banner,
+  [data-fx="css"] .org-banner [style*="--fx"] { animation: none; }
 }
 
 @theme inline {
