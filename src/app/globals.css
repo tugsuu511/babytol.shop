@@ -116,6 +116,79 @@ body {
   .capsule-stage[data-step="4"] .cap-drop { opacity: 1; }
 }
 
+/* ── Бидний тухай: карт задарч banner болох (View Transitions) ──
+   Картын суурь (.org-card), том тэмдэг (.org-mark), бусад хэсэг (.org-piece) тус бүр
+   өөр хурд, хоцролттой хөдөлж — карт задарч дахин нийлж буй мэт харагдана. */
+::view-transition-group(root) { animation-duration: 0.35s; }
+
+::view-transition-group(.org-card) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+::view-transition-group(.org-piece) {
+  animation-duration: 0.75s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-group(.org-mark) {
+  animation-duration: 0.95s;
+  animation-timing-function: cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+/* Хэсгүүдийг шат шатаар салгана */
+::view-transition-group(org-seal-maker),
+::view-transition-group(org-seal-supplier) { animation-delay: 0.02s; }
+::view-transition-group(org-name-maker),
+::view-transition-group(org-name-supplier) { animation-delay: 0.06s; }
+::view-transition-group(org-tag-maker),
+::view-transition-group(org-tag-supplier) { animation-delay: 0.1s; }
+
+/* Картын суурь (цул өнгө) хэлбэрээ дагаж сунана — харьцаа хадгалахаас болж үсрэхгүй */
+::view-transition-old(.org-card),
+::view-transition-new(.org-card) {
+  height: 100%;
+  width: 100%;
+}
+
+/* Бичвэрийн мөр таслалт өөрчлөгдөх тул хуучин хувилбар хурдан бүдгэрч, шинэ нь хожуу тодорно
+   (давхар, сунасан бичвэр харагдахгүй) */
+::view-transition-old(.org-piece) { animation: org-fade-out 0.22s ease-out both; }
+::view-transition-new(.org-piece) { animation: org-fade-in 0.4s 0.3s ease-out both; }
+::view-transition-old(.org-piece),
+::view-transition-new(.org-piece) { height: 100%; object-fit: contain; object-position: left center; }
+
+@keyframes org-fade-out { to { opacity: 0; } }
+@keyframes org-fade-in { from { opacity: 0; } }
+
+/* Зөвхөн нэг талд байгаа хэсэг (жишээ нь сонгогдоогүй картын гарчиг) — тарж алга болно */
+::view-transition-old(.org-piece):only-child,
+::view-transition-old(.org-mark):only-child { animation: org-scatter-out 0.4s cubic-bezier(0.4, 0, 1, 1) both; }
+::view-transition-new(.org-piece):only-child,
+::view-transition-new(.org-mark):only-child { animation: org-scatter-in 0.5s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes org-scatter-out {
+  to { opacity: 0; transform: translateY(18px) scale(0.92) rotate(-3deg); }
+}
+@keyframes org-scatter-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.94); }
+}
+
+/* Агуулга цаас шиг дээрээс доош дэлгэгдэнэ */
+.org-unfold > * {
+  transform-origin: 50% 0;
+  animation: org-unfold 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+.org-unfold > :nth-child(2) { animation-delay: 0.38s; }
+.org-unfold > :nth-child(3) { animation-delay: 0.5s; }
+.org-unfold > :nth-child(n + 4) { animation-delay: 0.6s; }
+
+@keyframes org-unfold {
+  from { opacity: 0; transform: perspective(1400px) rotateX(-65deg) translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-unfold > * { animation: none; }
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

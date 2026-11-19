@@ -1,15 +1,17 @@
 // "Switzerland · Premium Quality" тэмдэг — swiss.pdf-ийн вектор хуулбар (inline SVG).
 // Утга нь хажуугийн текстэд байгаа тул чимэглэл болгож aria-hidden хийнэ.
 
+import type { CSSProperties } from "react";
+
 const BUMPS = 40;
 const bumps = Array.from({ length: BUMPS }, (_, i) => {
   const a = (i / BUMPS) * Math.PI * 2;
   return { cx: +(100 + 93 * Math.cos(a)).toFixed(2), cy: +(100 + 93 * Math.sin(a)).toFixed(2) };
 });
 
-export function SwissSeal({ className }: { className?: string }) {
+export function SwissSeal({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
-    <svg viewBox="0 0 200 200" className={className} aria-hidden>
+    <svg viewBox="0 0 200 200" className={className} style={style} aria-hidden>
       <defs>
         {/* Дээд текст: зүүнээс баруун тийш, дээгүүр */}
         <path id="seal-top" d="M40 100 A60 60 0 0 1 160 100" fill="none" />

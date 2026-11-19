@@ -149,6 +149,15 @@ export function SiteHeader() {
               </div>
             </li>
 
+            <li>
+              <Link
+                href="/about"
+                onClick={closeAll}
+                className="block rounded-full px-4 py-2 text-[15px] font-semibold text-ink transition-colors hover:bg-ivory-200"
+              >
+                Бидний тухай
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -210,6 +219,15 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
+
+          <Link
+            href="/about"
+            onClick={closeAll}
+            className="mt-6 flex items-center justify-between rounded-xl border border-line px-4 py-3.5 text-base font-semibold text-ink"
+          >
+            Бидний тухай
+            <span aria-hidden className="text-ink-muted">→</span>
+          </Link>
 
           <Link
             href="/where-to-buy"

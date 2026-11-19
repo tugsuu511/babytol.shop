@@ -28,4 +28,13 @@ export type OrderState =
       errors: Partial<Record<OrderField, string>>;
       values: Partial<Record<Exclude<OrderField, "lines">, string>>;
     }
-  | { status: "success"; orderNo: string; total: number; phone: string };
+  | {
+      status: "success";
+      orderNo: string;
+      total: number;
+      phone: string;
+      /** "Одоо төлөх": Bonum-ийн төлбөрийн хуудас — клиент шууд шилжинэ */
+      payUrl?: string;
+      /** "Одоо төлөх" сонгосон ч төлбөрийн холбоос үүсээгүй (захиалга хадгалагдсан) */
+      paymentUnavailable?: boolean;
+    };

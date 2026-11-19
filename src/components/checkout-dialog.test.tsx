@@ -13,11 +13,19 @@ vi.mock("@/app/actions/order", async (importOriginal) => {
   return { placeOrder: vi.fn(actual.placeOrder) };
 });
 const placeOrder = vi.mocked(actions.placeOrder);
+// Бодит action нь DB, Bonum руу хандана — тестэд хуурамчаар орлуулна
+vi.mock("@/lib/orders", () => ({ createOrder: vi.fn(async () => {}), setBonumInvoice: vi.fn(async () => {}) }));
+vi.mock("@/lib/bonum", () => ({
+  createPaymentLink: vi.fn(async () => {
+    throw new Error("Bonum is not configured in tests");
+  }),
+}));
 
 beforeEach(() => {
   resetCart();
   placeOrder.mockClear();
-  vi.spyOn(console, "log").mockImplementation(() => {});
+  // console.error: action-ий алдааны лог болон jsdom-ийн "navigation not implemented" мэдэгдэл
+  vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
 function Count() {
@@ -114,6 +122,34 @@ describe("CheckoutDialog", () => {
     expect(ui.getByLabelText("Таны нэр")).toHaveValue("Болд");
     expect(ui.getByLabelText("Таны нэр")).not.toHaveAttribute("aria-invalid");
     expect(screen.getByTestId("cart")).toHaveTextContent("2/false");
+  });
+
+  it("offers the Bonum payment page link when paying now", async () => {
+    placeOrder.mockResolvedValueOnce({
+      status: "success",
+      orderNo: "BT-PAY1",
+      total: 56000,
+      phone: "99112233",
+      payUrl: "https://pay.example/inv-1",
+    });
+    const { ui, user } = renderCheckout();
+    await fillValid(ui, user);
+    await user.click(ui.getByRole("button", { name: /Захиалга илгээх/ }));
+
+    const link = await ui.findByRole("link", { name: /энд дарна уу/ });
+    expect(link).toHaveAttribute("href", "https://pay.example/inv-1");
+    await waitFor(() => expect(screen.getByTestId("cart")).toHaveTextContent("0/false"));
+  });
+
+  it("keeps the order and explains when the online payment link is unavailable", async () => {
+    const { ui, user } = renderCheckout();
+    await fillValid(ui, user); // анхдагч нь "Одоо төлөх"; Bonum тестэд алдаа өгнө
+    await user.click(ui.getByRole("button", { name: /Захиалга илгээх/ }));
+
+    const status = await ui.findByRole("status");
+    expect(status).toHaveTextContent("Захиалга хүлээн авлаа");
+    expect(status).toHaveTextContent("Таны захиалга хадгалагдсан");
+    expect(ui.queryByRole("link")).not.toBeInTheDocument();
   });
 
   it("shows a pending state while submitting", async () => {

@@ -1,8 +1,14 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { placeOrder } from "@/app/actions/order";
+import { createPaymentLink } from "@/lib/bonum";
+import { createOrder, setBonumInvoice } from "@/lib/orders";
 import type { OrderState } from "@/lib/order";
 import { MAX_QTY } from "@/lib/products";
+
+// DB болон Bonum-ийг хуурамчаар орлуулна — энд зөвхөн action-ий логикийг шалгана
+vi.mock("@/lib/orders", () => ({ createOrder: vi.fn(), setBonumInvoice: vi.fn() }));
+vi.mock("@/lib/bonum", () => ({ createPaymentLink: vi.fn() }));
 
 const IDLE: OrderState = { status: "idle" };
 
@@ -31,9 +37,13 @@ async function expectError(overrides: Parameters<typeof form>[0]) {
   return res;
 }
 
-let log: ReturnType<typeof vi.spyOn>;
+const save = vi.mocked(createOrder);
+const payLink = vi.mocked(createPaymentLink);
 beforeEach(() => {
-  log = vi.spyOn(console, "log").mockImplementation(() => {});
+  save.mockReset().mockResolvedValue(undefined);
+  vi.mocked(setBonumInvoice).mockReset().mockResolvedValue(undefined);
+  payLink.mockReset().mockResolvedValue({ invoiceId: "inv-1", payUrl: "https://pay.example/inv-1" });
+  vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
 describe("placeOrder — success", () => {
@@ -83,20 +93,57 @@ describe("placeOrder — success", () => {
     expect(res).toMatchObject({ status: "success", total: 28000 * MAX_QTY });
   });
 
-  it("logs a structured order record with server-side line items", async () => {
+  it("saves the order with server-side line items", async () => {
     const res = await submit();
-    expect(log).toHaveBeenCalledTimes(1);
-    const [tag, json] = log.mock.calls[0] as [string, string];
-    expect(tag).toBe("[order]");
-    const record = JSON.parse(json);
-    expect(record).toMatchObject({
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith({
       orderNo: res.status === "success" ? res.orderNo : "",
       name: "Болд",
+      phone: "99112233",
       district: "Баянзүрх",
+      address: valid.address,
+      paymentMethod: "on_delivery",
       total: 56000,
       items: [{ slug: "d3", name: "Babytol D3", qty: 2, price: 28000, lineTotal: 56000 }],
     });
-    expect(new Date(record.createdAt).toString()).not.toBe("Invalid Date");
+  });
+
+  it("generates a different order number each time", async () => {
+    const [a, b] = await Promise.all([submit(), submit()]);
+    expect(a.status === "success" && b.status === "success" && a.orderNo !== b.orderNo).toBe(true);
+  });
+
+  it("returns an error and keeps the form values when the order cannot be saved", async () => {
+    save.mockRejectedValue(new Error("db down"));
+    const res = await expectError({});
+    expect(res.errors).toEqual({});
+    expect(res.values).toMatchObject({ name: "Болд", phone: "99112233" });
+    expect(payLink).not.toHaveBeenCalled();
+  });
+});
+
+describe("placeOrder — payment", () => {
+  it("does not create a payment link for pay-on-delivery", async () => {
+    const res = await submit({ payment: "on_delivery" });
+    expect(res).not.toHaveProperty("payUrl");
+    expect(payLink).not.toHaveBeenCalled();
+  });
+
+  it("saves the order first, then returns the Bonum payment link", async () => {
+    const res = await submit({ payment: "now" });
+    if (res.status !== "success") throw new Error("expected success");
+    expect(res.payUrl).toBe("https://pay.example/inv-1");
+    expect(payLink).toHaveBeenCalledWith({ orderNo: res.orderNo, total: 56000 });
+    expect(setBonumInvoice).toHaveBeenCalledWith(res.orderNo, "inv-1");
+    expect(save.mock.invocationCallOrder[0]).toBeLessThan(payLink.mock.invocationCallOrder[0]);
+  });
+
+  it("still succeeds (order kept) when the payment link cannot be created", async () => {
+    payLink.mockRejectedValue(new Error("bonum down"));
+    const res = await submit({ payment: "now" });
+    expect(res).toMatchObject({ status: "success", paymentUnavailable: true });
+    expect(res).not.toHaveProperty("payUrl");
+    expect(save).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -119,7 +166,7 @@ describe("placeOrder — validation", () => {
     const res = await expectError(overrides);
     expect(Object.keys(res.errors)).toEqual([field]);
     expect(res.message).toBeTruthy();
-    expect(log).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 
   it.each([

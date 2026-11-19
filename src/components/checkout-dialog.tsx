@@ -48,7 +48,10 @@ function CheckoutForm() {
   const [state, formAction, pending] = useActionState<OrderState, FormData>(placeOrder, { status: "idle" });
 
   useEffect(() => {
-    if (state.status === "success") cart.clear();
+    if (state.status !== "success") return;
+    cart.clear();
+    // "Одоо төлөх": захиалга хадгалагдсан — Bonum-ийн төлбөрийн хуудас руу шилжинэ
+    if (state.payUrl) window.location.assign(state.payUrl);
   }, [state]);
 
   const errors = state.status === "error" ? state.errors : {};
@@ -71,7 +74,7 @@ function CheckoutForm() {
       </div>
 
       {state.status === "success" ? (
-        <Success orderNo={state.orderNo} total={state.total} phone={state.phone} />
+        <Success {...state} />
       ) : (
         <>
           <h2 id="checkout-title" className="mt-6 text-[2.25rem] font-medium leading-[1.1] tracking-[-0.02em] sm:text-[2.75rem]">
@@ -269,7 +272,7 @@ function FieldError({ id, msg }: { id?: string; msg?: string }) {
   );
 }
 
-function Success({ orderNo, total, phone }: { orderNo: string; total: number; phone: string }) {
+function Success({ orderNo, total, phone, payUrl, paymentUnavailable }: Extract<OrderState, { status: "success" }>) {
   return (
     <div className="py-6 text-center" role="status">
       <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-green/12 text-brand-green">
@@ -291,6 +294,19 @@ function Success({ orderNo, total, phone }: { orderNo: string; total: number; ph
           <dd className="font-semibold tabular-nums">{formatPrice(total)}</dd>
         </div>
       </dl>
+      {payUrl && (
+        <p className="mt-5 text-sm text-ink-muted">
+          Төлбөрийн хуудас руу шилжиж байна…{" "}
+          <a href={payUrl} className="font-semibold text-brand-red underline">
+            Шилжихгүй бол энд дарна уу
+          </a>
+        </p>
+      )}
+      {paymentUnavailable && (
+        <p className="mx-auto mt-5 max-w-sm rounded-xl bg-brand-orange/15 px-4 py-3 text-sm text-ink">
+          Онлайн төлбөрийн холбоос одоогоор үүссэнгүй. Таны захиалга хадгалагдсан — бид холбогдож төлбөрийг тохирно.
+        </p>
+      )}
       <button
         type="button"
         onClick={cart.closeCheckout}
