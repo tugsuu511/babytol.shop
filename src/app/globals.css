@@ -22,6 +22,18 @@
   --color-brand-pink: #ed1072;
   --color-brand-green: #00a785;
 
+  /* Ачит Фарм — логоны пикселээс авсан (aau: цэнхэр / улаан-улбар / ногоон). Babytol-ийн палитр биш. */
+  --color-achit-cyan: #02aeed;   /* зөвхөн дэвсгэр, акцент */
+  --color-achit-blue: #0e3ac0;   /* текст OK (цагаан дээр 8.6:1) */
+  --color-achit-blue-dark: #0b2f9c;
+  --color-achit-crimson: #a4223e; /* текст OK (7.4:1) */
+  --color-achit-orange: #ef650e; /* зөвхөн том текст, акцент */
+  --color-achit-teal: #1baf8b;   /* зөвхөн дэвсгэр, акцент */
+  --color-achit-lime: #71c151;   /* зөвхөн дэвсгэр, акцент */
+  --color-achit-sky: #eaf6fd;
+  --color-achit-peach: #fdefe6;
+  --color-achit-mint: #e8f6ef;
+
   /* Hero хөдөлгөөн — motion-safe: дотор л хэрэглэнэ */
   --animate-rise: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 

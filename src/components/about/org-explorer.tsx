@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { flushSync } from "react-dom";
+import { AchitSlogan, AchitStripe } from "@/components/achit-mark";
 import { SwissCross } from "@/components/swiss-cross";
 import { SwissSeal } from "@/components/swiss-seal";
 
@@ -213,8 +214,9 @@ function SupplierCard({ onOpen }: { onOpen: () => void }) {
   return (
     <article
       style={vt("org-card-supplier", "org-card")}
-      className="group relative isolate flex h-full min-h-[380px] flex-col overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink shadow-[0_32px_64px_-40px_rgba(41,50,58,0.5)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-ink sm:min-h-[480px] sm:p-10"
+      className="group relative isolate flex h-full min-h-[380px] flex-col overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink shadow-[0_32px_64px_-36px_rgba(14,58,192,0.45)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-achit-blue sm:min-h-[480px] sm:p-10"
     >
+      <AchitStripe className="absolute inset-x-0 top-0" />
       <span style={vt("org-mark-supplier", "org-mark")} className="block w-28 sm:w-36">
         <Image
           src="/brand/achit/achit-pharma-logo.png"
@@ -239,7 +241,7 @@ function SupplierCard({ onOpen }: { onOpen: () => void }) {
       </h2>
       <p
         style={vt("org-name-supplier", "org-piece")}
-        className="mt-3 w-fit text-xl font-semibold text-ink-muted sm:text-2xl"
+        className="mt-3 w-fit text-xl font-semibold text-achit-blue sm:text-2xl"
       >
         {c.name}
       </p>
@@ -250,10 +252,14 @@ function SupplierCard({ onOpen }: { onOpen: () => void }) {
         {c.tagline}
       </p>
 
+      <div style={vt("org-slogan-supplier", "org-piece")} className="mt-auto w-fit pt-8">
+        <AchitSlogan className="text-[1.75rem] sm:text-[2.125rem]" />
+      </div>
+
       <span
         aria-hidden
         style={vt("org-cta-supplier", "org-piece")}
-        className="mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-ink px-5 py-3 text-[15px] font-semibold text-white transition-colors group-hover:bg-[#1d242a]"
+        className="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-achit-blue px-5 py-3 text-[15px] font-semibold text-white transition-colors group-hover:bg-achit-blue-dark"
       >
         Дэлгэрэнгүй
         <Arrow />
@@ -301,7 +307,7 @@ function Opened({
             className={`inline-flex min-h-11 items-center gap-3 rounded-full py-2 pl-2 pr-5 text-[15px] font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 ${
               other === "maker"
                 ? "bg-brand-red text-white focus-visible:outline-brand-red"
-                : "border border-line bg-white text-ink focus-visible:outline-ink"
+                : "border border-achit-blue/20 bg-white text-achit-blue focus-visible:outline-achit-blue"
             }`}
           >
             {other === "maker" ? (
@@ -379,6 +385,7 @@ function SupplierBanner() {
       style={vt("org-card-supplier", "org-card")}
       className="org-banner relative isolate overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink sm:p-10 lg:px-14 lg:py-12"
     >
+      <AchitStripe className="absolute inset-x-0 top-0" />
       <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
         <span
           style={vt("org-mark-supplier", "org-mark", ["-60px", "-30px", "-12deg", 0])}
@@ -401,7 +408,7 @@ function SupplierBanner() {
           </h2>
           <p
             style={vt("org-name-supplier", "org-piece", ["-30px", "40px", "-3deg", 160])}
-            className="mt-3 w-fit text-xl font-semibold text-ink-muted sm:text-2xl"
+            className="mt-3 w-fit text-xl font-semibold text-achit-blue sm:text-2xl"
           >
             {c.name}
           </p>
@@ -413,6 +420,12 @@ function SupplierBanner() {
       >
         {c.tagline}
       </p>
+      <div
+        style={vt("org-slogan-supplier", "org-piece", ["60px", "20px", "4deg", 280])}
+        className="mt-8 w-fit lg:absolute lg:right-14 lg:top-1/2 lg:mt-0 lg:-translate-y-1/2"
+      >
+        <AchitSlogan className="text-[1.875rem] sm:text-[2.5rem] xl:text-[3rem]" />
+      </div>
     </div>
   );
 }

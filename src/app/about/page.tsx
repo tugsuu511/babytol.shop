@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { OrgExplorer } from "@/components/about/org-explorer";
+import { AchitStripe } from "@/components/achit-mark";
 import { SwissCross } from "@/components/swiss-cross";
 import { SwissSeal } from "@/components/swiss-seal";
 import { products } from "@/lib/products";
@@ -75,11 +76,31 @@ const timeline = [
     body: "Хүүхдийн эрүүл мэндийн хэрэгцээнд чиглэсэн бүтээгдэхүүний багцаа өргөжүүлэв.",
   },
   { when: "2025.06", title: "ADVA-IRON", body: "Төмрийн хэрэгцээнд чиглэсэн ADVA-IRON-ийг зах зээлд нэвтрүүлэв." },
+  { when: "2026.04", title: "Ondalenz", body: "Ondalenz-ийг аманд уусдаг хальс хэлбэрээр зах зээлд нэвтрүүлэв." },
+  // Онцлох үйл явдал — Babytol-ийн 4 бүтээгдэхүүнтэй өргөн картаар харуулна
   {
-    when: "2026",
-    title: "20 шинэ бүтээгдэхүүн",
-    body: "Монгол Улсын хууль, шаардлагад нийцсэн 20 шинэ бүтээгдэхүүнийг үе шаттайгаар хүргэнэ.",
+    when: "2026.09",
+    title: "Швейцарийн Babytol — Монголд албан ёсоор",
+    body: "Швейцарь улсын Babytol брендийн 4 нэр төрлийн бүтээгдэхүүнийг Монголын зах зээлд албан ёсны эрхтэйгээр шинээр нийлүүлэв.",
+    highlight: true,
   },
+];
+
+/** Ачит Фарм логоны гурван өнгө — цайвар дэвсгэр + цэг */
+const achitTones = [
+  { soft: "bg-achit-sky", solid: "bg-achit-blue" },
+  { soft: "bg-achit-peach", solid: "bg-achit-orange" },
+  { soft: "bg-achit-mint", solid: "bg-achit-teal" },
+];
+
+/** Замналын зураас: цэнхэр → улаан-улбар → ногоон (логоны дарааллаар) */
+const timelineBars = [
+  "bg-gradient-to-r from-achit-cyan to-achit-blue",
+  "bg-gradient-to-r from-achit-blue to-achit-crimson",
+  "bg-gradient-to-r from-achit-crimson to-achit-orange",
+  "bg-gradient-to-r from-achit-orange to-achit-teal",
+  "bg-gradient-to-r from-achit-teal to-achit-lime",
+  "", // 2026.09 — онцлох карт өөрийн зураастай
 ];
 
 const contact: { label: string; value: ReactNode }[] = [
@@ -253,7 +274,13 @@ function SupplierContent() {
               Монголын зах зээлд тогтвортой, хариуцлагатайгаар нийлүүлж байна. Швейцарийн 4U Pharma-гийн Babytol
               цувралыг Монголын ээж, аавуудад хүргэж буй нь Ачит Фарм.
             </p>
-            <p className="mt-6 text-xl font-bold text-ink">“Хамгийн чухал нь хүүхдийн эрүүл мэнд.”</p>
+            <blockquote className="@container mt-8">
+              <AchitStripe className="max-w-24 overflow-hidden rounded-full" />
+              {/* Нэг мөрөнд: бичвэр ≈ 22.8 × font-size өргөн тул баганын өргөнд тааруулж жижигрүүлнэ */}
+              <p className="mt-4 whitespace-nowrap text-[min(1.5rem,4.3cqi)] font-bold text-achit-blue">
+                “Хамгийн чухал нь хүүхдийн эрүүл мэнд.”
+              </p>
+            </blockquote>
           </div>
 
           <Passport
@@ -269,7 +296,7 @@ function SupplierContent() {
                 />
               </span>
             }
-            barClass="bg-ink"
+            barClass="bg-gradient-to-r from-[#0860D4] to-achit-blue"
             rows={supplierPassport}
           />
         </div>
@@ -280,14 +307,14 @@ function SupplierContent() {
         <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-20 lg:px-8">
           <div>
             <dl className="grid gap-10 sm:grid-cols-2">
-              <div className="border-t-4 border-ink pt-5">
+              <div className="border-t-4 border-achit-blue pt-5">
                 <dt className="text-2xl font-bold text-ink">Зорилго</dt>
                 <dd className="mt-3 text-[16px] leading-[1.6] text-ink-muted">
                   Монгол Улсын эмийн зах зээлд дээд зэрэглэлийн, чанартай, олон улсад хүлээн зөвшөөрөгдсөн, эмчилгээний
                   өндөр үр дүнтэй эм, эрүүл мэндийн бүтээгдэхүүн, эмнэлгийн хэрэгслийг ханган нийлүүлэх.
                 </dd>
               </div>
-              <div className="border-t-4 border-ink pt-5">
+              <div className="border-t-4 border-achit-teal pt-5">
                 <dt className="text-2xl font-bold text-ink">Алсын хараа</dt>
                 <dd className="mt-3 text-[16px] leading-[1.6] text-ink-muted">
                   Мэдлэг, нотолгоо шинжилгээнд тулгуурласан, шинийг санаачлагч, бүтээлч, үнэнч шударга, хамтын хөгжлийг
@@ -298,11 +325,18 @@ function SupplierContent() {
 
             <h4 className="mt-12 text-sm font-semibold text-ink-muted">Эрхэмлэдэг үнэ цэнэ</h4>
             <ul className="mt-4 flex flex-wrap gap-2.5">
-              {supplierValues.map((v) => (
-                <li key={v} className="rounded-full bg-white px-4 py-2 text-[15px] font-semibold text-ink">
-                  {v}
-                </li>
-              ))}
+              {supplierValues.map((v, i) => {
+                const tone = achitTones[i % achitTones.length];
+                return (
+                  <li
+                    key={v}
+                    className={`flex items-center gap-2 rounded-full px-4 py-2 text-[15px] font-semibold text-ink ${tone.soft}`}
+                  >
+                    <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${tone.solid}`} />
+                    {v}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -325,14 +359,19 @@ function SupplierContent() {
       <div className="bg-white py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h3 className="text-3xl font-bold leading-[1.15] text-ink sm:text-4xl">Манай замнал</h3>
-          <ol className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
-            {timeline.map((t) => (
-              <li key={t.when} className="border-t-2 border-line pt-5">
-                <p className="text-2xl font-bold tabular-nums text-ink">{t.when}</p>
-                <h4 className="mt-3 text-lg font-bold leading-snug text-ink">{t.title}</h4>
-                <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{t.body}</p>
-              </li>
-            ))}
+          <ol className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-10">
+            {timeline.map((t, i) =>
+              "highlight" in t ? (
+                <BabytolMilestone key={t.when} when={t.when} title={t.title} body={t.body} />
+              ) : (
+                <li key={t.when}>
+                  <span aria-hidden className={`mb-5 block h-1 rounded-full ${timelineBars[i]}`} />
+                  <p className="text-2xl font-bold tabular-nums text-ink">{t.when}</p>
+                  <h4 className="mt-3 text-lg font-bold leading-snug text-ink">{t.title}</h4>
+                  <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{t.body}</p>
+                </li>
+              ),
+            )}
           </ol>
 
           <div className="mt-16 grid gap-10 border-t border-line pt-12 lg:grid-cols-2 lg:gap-20">
@@ -341,7 +380,7 @@ function SupplierContent() {
               <p className="mt-4 max-w-[60ch] text-[16px] leading-[1.6] text-ink-muted [text-wrap:pretty]">
                 Ачит Фарм хүүхэд, өсвөр насныхны бие бялдар, нийгэм, танин мэдэхүй, сэтгэл зүйн хөгжилд онцгой анхаарч,
                 тэдний эрүүл мэндийг хамгаалж буй эмч, эмнэлгийн ажилтнуудын хөгжлийг дэмждэг. Жилийн ашгийнхаа{" "}
-                <strong className="font-bold text-ink">20–25%</strong>-ийг боловсрол, эрүүл мэнд, урьдчилан
+                <strong className="font-bold text-achit-crimson">20–25%</strong>-ийг боловсрол, эрүүл мэнд, урьдчилан
                 сэргийлэлтийг дэмжсэн нийгмийн төслүүдэд хандивладаг.
               </p>
               <p className="mt-4 max-w-[60ch] text-[16px] leading-[1.6] text-ink-muted [text-wrap:pretty]">
@@ -446,6 +485,63 @@ function BabytolFamily() {
         </p>
       </div>
     </section>
+  );
+}
+
+/** Замналын онцлох үе — Babytol-ийн 4 бүтээгдэхүүн Монголд албан ёсоор */
+function BabytolMilestone({ when, title, body }: { when: string; title: string; body: string }) {
+  return (
+    <li className="relative isolate overflow-hidden rounded-[2rem] bg-ivory-200 p-6 shadow-[0_28px_56px_-36px_rgba(204,36,46,0.55)] ring-1 ring-brand-red/15 sm:col-span-2 sm:p-8 lg:col-span-3 lg:p-10">
+      {/* 4 бүтээгдэхүүний өнгө */}
+      <span aria-hidden className="absolute inset-x-0 top-0 flex h-1.5">
+        {products.map((p) => (
+          <span key={p.slug} className="flex-1" style={{ background: p.accent }} />
+        ))}
+      </span>
+      <SwissCross
+        className="pointer-events-none absolute -right-10 -top-10 -z-10 w-44 text-brand-red/[0.07] sm:w-56"
+      />
+
+      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-10">
+        <div>
+          <p className="flex items-center gap-3 text-3xl font-bold tabular-nums text-brand-red sm:text-4xl">
+            <SwissCross className="h-7 w-7 shrink-0 rounded-[5px] bg-brand-red text-white sm:h-8 sm:w-8" />
+            {when}
+          </p>
+          <h4 className="mt-4 text-xl font-bold leading-snug text-ink [text-wrap:balance] sm:text-2xl">{title}</h4>
+          <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-ink [text-wrap:pretty]">{body}</p>
+        </div>
+
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4">
+          {products.map((p) => (
+            <li key={p.slug}>
+              <Link
+                href={`/products/${p.slug}`}
+                className="group block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-red/50 focus-visible:ring-offset-4 focus-visible:ring-offset-ivory-200"
+              >
+                <span className="relative block aspect-[1.83] w-full">
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-[10%] -bottom-1 h-2.5 rounded-[50%] bg-ink/15 blur-md"
+                  />
+                  <Image
+                    src={p.packshot}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 12vw, (min-width: 640px) 20vw, 42vw"
+                    className="object-contain transition-transform duration-500 ease-out group-hover:-translate-y-1"
+                  />
+                </span>
+                <span className="mt-3 block text-[13px] font-bold leading-tight text-ink">
+                  <span aria-hidden className="mb-1.5 block h-[3px] w-5 rounded-full" style={{ background: p.accent }} />
+                  {p.name}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
   );
 }
 
