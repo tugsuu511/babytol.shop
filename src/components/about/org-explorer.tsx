@@ -163,8 +163,9 @@ function MakerCard({ onOpen }: { onOpen: () => void }) {
   const c = copy.maker;
   return (
     <article
+      onClick={onOpen}
       style={vt("org-card-maker", "org-card")}
-      className="group relative isolate flex h-full min-h-[460px] flex-col overflow-hidden rounded-[2rem] bg-brand-red p-7 text-white shadow-[0_32px_64px_-36px_rgba(204,36,46,0.75)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-brand-red sm:min-h-[480px] sm:p-10"
+      className="group relative cursor-pointer isolate flex h-full min-h-[460px] flex-col overflow-hidden rounded-[2rem] bg-brand-red p-7 text-white shadow-[0_32px_64px_-36px_rgba(204,36,46,0.75)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-brand-red sm:min-h-[480px] sm:p-10"
     >
       <SwissCross
         style={vt("org-mark-maker", "org-mark")}
@@ -176,11 +177,10 @@ function MakerCard({ onOpen }: { onOpen: () => void }) {
         style={vt("org-role-maker", "org-piece")}
         className="mt-8 w-fit text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-6xl"
       >
-        <button
-          type="button"
-          onClick={onOpen}
-          className="text-left outline-none after:absolute after:inset-0 after:content-['']"
-        >
+        {/* Карт бүхэлдээ (article onClick) дарагдана — товчны click дээш bubble хийнэ.
+            Хэсэг бүр view-transition-name-тэй тул тус тусдаа stacking context үүсгэж,
+            ::after давхарга CTA зэрэг хэсгүүдийн доор орж хоцордог байсан. */}
+        <button type="button" className="text-left outline-none">
           {c.role}
         </button>
       </h2>
@@ -213,8 +213,9 @@ function SupplierCard({ onOpen }: { onOpen: () => void }) {
   const c = copy.supplier;
   return (
     <article
+      onClick={onOpen}
       style={vt("org-card-supplier", "org-card")}
-      className="group relative isolate flex h-full min-h-[380px] flex-col overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink shadow-[0_32px_64px_-36px_rgba(14,58,192,0.45)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-achit-blue sm:min-h-[480px] sm:p-10"
+      className="group relative cursor-pointer isolate flex h-full min-h-[380px] flex-col overflow-hidden rounded-[2rem] border border-line bg-white p-7 text-ink shadow-[0_32px_64px_-36px_rgba(14,58,192,0.45)] transition-transform duration-500 ease-out hover:-translate-y-1 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-achit-blue sm:min-h-[480px] sm:p-10"
     >
       <AchitStripe className="absolute inset-x-0 top-0" />
       <span style={vt("org-mark-supplier", "org-mark")} className="block w-28 sm:w-36">
@@ -231,11 +232,10 @@ function SupplierCard({ onOpen }: { onOpen: () => void }) {
         style={vt("org-role-supplier", "org-piece")}
         className="mt-8 w-fit text-[2.5rem] font-bold leading-none tracking-[-0.02em] sm:text-6xl"
       >
-        <button
-          type="button"
-          onClick={onOpen}
-          className="text-left outline-none after:absolute after:inset-0 after:content-['']"
-        >
+        {/* Карт бүхэлдээ (article onClick) дарагдана — товчны click дээш bubble хийнэ.
+            Хэсэг бүр view-transition-name-тэй тул тус тусдаа stacking context үүсгэж,
+            ::after давхарга CTA зэрэг хэсгүүдийн доор орж хоцордог байсан. */}
+        <button type="button" className="text-left outline-none">
           {c.role}
         </button>
       </h2>
