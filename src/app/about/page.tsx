@@ -462,27 +462,6 @@ function BabytolFamily() {
             </li>
           ))}
         </ul>
-
-        <p className="mt-14 text-[13px] text-ink-muted">
-          Эх сурвалж:{" "}
-          <a
-            href="https://www.4upharma.com/en/page/about-us/1/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4 hover:text-ink"
-          >
-            4upharma.com
-          </a>
-          {", "}
-          <a
-            href="https://achitpharma.com/about"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4 hover:text-ink"
-          >
-            achitpharma.com
-          </a>
-        </p>
       </div>
     </section>
   );

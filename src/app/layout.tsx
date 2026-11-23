@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CartDrawer } from "@/components/cart-drawer";
 import { CartToast } from "@/components/cart-toast";
 import { CheckoutDialog } from "@/components/checkout-dialog";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main id="main" className="flex flex-1 flex-col">
           {children}
         </main>
+        <SiteFooter />
         <CartDrawer />
         <CheckoutDialog />
         <CartToast />
