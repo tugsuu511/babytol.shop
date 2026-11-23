@@ -47,3 +47,20 @@ test("unknown product shows not-found and is not indexable", async ({ page }) =>
   await expect(page.getByText(/404|could not be found/i).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Сагсанд нэмэх" })).toHaveCount(0);
 });
+
+test("where-to-buy lists stockists and filters by search and region", async ({ page }) => {
+  const res = await page.goto("/where-to-buy");
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("эмийн сангаас");
+
+  await page.getByRole("searchbox").fill("Монос Ховд");
+  await expect(page.getByRole("heading", { level: 3 })).toHaveText(["Ховд"]);
+
+  await page.getByRole("searchbox").fill("zzzz");
+  await expect(page.getByText("Илэрц олдсонгүй")).toBeVisible();
+  await page.getByRole("button", { name: "Бүх жагсаалтыг харах" }).click();
+
+  await page.getByRole("radio", { name: "Орон нутаг" }).click();
+  await page.getByRole("button", { name: /^Орхон/ }).click();
+  await expect(page.getByRole("heading", { level: 3 })).toHaveText(["Орхон"]);
+});
